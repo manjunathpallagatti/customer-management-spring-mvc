@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,500;1,300&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'DM Mono', monospace;
+            background: #0f0f0f;
+            color: #e8e6e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem 2.5rem;
+            background: #161616;
+            border-bottom: 0.5px solid #2a2a2a;
+        }
+        .logo {
+            font-family: 'Fraunces', serif;
+            font-weight: 300;
+            font-size: 22px;
+            color: #e8e6e0;
+        }
+        .logo em { font-style: italic; color: #1D9E75; }
+        .add-btn {
+            font-family: 'DM Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.06em;
+            padding: 9px 20px;
+            background: #1D9E75;
+            color: #fff;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .add-btn:hover { background: #0F6E56; }
+        .page-header {
+            padding: 2.5rem 2.5rem 1.5rem;
+            max-width: 1100px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .page-tag {
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #1D9E75;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        .page-header h1 {
+            font-family: 'Fraunces', serif;
+            font-weight: 300;
+            font-size: 36px;
+            letter-spacing: -0.5px;
+            color: #e8e6e0;
+        }
+        .page-header h1 em { font-style: italic; color: #1D9E75; }
+        .stats-row {
+            display: flex;
+            gap: 12px;
+            padding: 0 2.5rem 1.5rem;
+            max-width: 1100px;
+            margin: 0 auto;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+        .stat {
+            background: #161616;
+            border: 0.5px solid #2a2a2a;
+            border-radius: 10px;
+            padding: 16px 24px;
+        }
+        .stat-label {
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #888780;
+            margin-bottom: 6px;
+        }
+        .stat-value { font-size: 26px; font-weight: 500; }
+        .stat-total .stat-value { color: #1D9E75; }
+        .stat-new .stat-value { color: #378ADD; }
+        .stat-contacted .stat-value { color: #EF9F27; }
+        .stat-qualified .stat-value { color: #7F77DD; }
+        .stat-converted .stat-value { color: #5DCAA5; }
+        .stat-lost .stat-value { color: #E24B4A; }
+        .table-wrap {
+            padding: 0 2.5rem 3rem;
+            max-width: 1100px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #161616;
+            border: 0.5px solid #2a2a2a;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        thead { background: #1e1e1e; }
+        th {
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #888780;
+            padding: 16px 20px;
+            text-align: left;
+            font-weight: 500;
+        }
+        td {
+            font-size: 14px;
+            color: #e8e6e0;
+            padding: 16px 20px;
+            border-top: 0.5px solid #222;
+        }
+        tr:hover td { background: #1a1a1a; }
+        .id-badge {
+            background: #222;
+            color: #888780;
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        .email-text {
+            color: #888780;
+            font-size: 13px;
+        }
+
+        /* Status badges */
+        .status-new { background: #042C53; color: #85B7EB; padding: 4px 12px; border-radius: 5px; font-size: 12px; font-weight: 500; }
+        .status-contacted { background: #412402; color: #EF9F27; padding: 4px 12px; border-radius: 5px; font-size: 12px; font-weight: 500; }
+        .status-qualified { background: #26215C; color: #AFA9EC; padding: 4px 12px; border-radius: 5px; font-size: 12px; font-weight: 500; }
+        .status-converted { background: #0d3328; color: #5DCAA5; padding: 4px 12px; border-radius: 5px; font-size: 12px; font-weight: 500; }
+        .status-lost { background: #501313; color: #F09595; padding: 4px 12px; border-radius: 5px; font-size: 12px; font-weight: 500; }
+
+        /* Source badge */
+        .source-badge {
+            background: #1e1b3a;
+            color: #AFA9EC;
+            padding: 4px 12px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        .actions { display: flex; gap: 8px; }
+        .edit-btn {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 7px 16px;
+            border: 0.5px solid #2a2a2a;
+            border-radius: 6px;
+            color: #e8e6e0;
+            background: transparent;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+        .edit-btn:hover { border-color: #1D9E75; color: #1D9E75; background: #0d2e22; }
+        .delete-btn {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 7px 16px;
+            border: 0.5px solid #2a2a2a;
+            border-radius: 6px;
+            color: #e24b4a;
+            background: transparent;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+        .delete-btn:hover { border-color: #e24b4a; background: #2d1010; }
+        .empty {
+            text-align: center;
+            padding: 4rem;
+            color: #888780;
+            font-size: 14px;
+        }
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 12px;
+            color: #444441;
+            border-top: 0.5px solid #2a2a2a;
+        }
+        .followup-badge {
+            color: #888780;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <span class="logo">customer <em>relations</em></span>
+    <a th:href="@{/showcustomerform}" class="add-btn">+ add customer</a>
+</nav>
+
+<div class="page-header">
+    <span class="page-tag">dashboard</span>
+    <h1>All <em>Customers</em></h1>
+</div>
+
+<div class="stats-row">
+    <div class="stat stat-total">
+        <div class="stat-label">total</div>
+        <div class="stat-value" th:text="${#lists.size(customers)}">0</div>
+    </div>
+    <div class="stat stat-new">
+        <div class="stat-label">new</div>
+        <div class="stat-value" th:text="${#lists.size(customers.?[status == 'New'])}">0</div>
+    </div>
+    <div class="stat stat-contacted">
+        <div class="stat-label">contacted</div>
+        <div class="stat-value" th:text="${#lists.size(customers.?[status == 'Contacted'])}">0</div>
+    </div>
+    <div class="stat stat-qualified">
+        <div class="stat-label">qualified</div>
+        <div class="stat-value" th:text="${#lists.size(customers.?[status == 'Qualified'])}">0</div>
+    </div>
+    <div class="stat stat-converted">
+        <div class="stat-label">converted</div>
+        <div class="stat-value" th:text="${#lists.size(customers.?[status == 'Converted'])}">0</div>
+    </div>
+    <div class="stat stat-lost">
+        <div class="stat-label">lost</div>
+        <div class="stat-value" th:text="${#lists.size(customers.?[status == 'Lost'])}">0</div>
+    </div>
+</div>
+
+<div class="table-wrap">
+    <table th:if="${not #lists.isEmpty(customers)}">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Company</th>
+            <th>Status</th>
+            <th>Source</th>
+            <th>Follow-up</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="customer : ${customers}">
+            <td><span class="id-badge" th:text="${customer.id}">1</span></td>
+            <td th:text="${customer.customerName}">John Doe</td>
+            <td><span class="email-text" th:text="${customer.email}">john@mail.com</span></td>
+            <td th:text="${customer.company}">Acme</td>
+            <td>
+                <span th:if="${customer.status == 'New'}" class="status-new">new</span>
+                <span th:if="${customer.status == 'Contacted'}" class="status-contacted">contacted</span>
+                <span th:if="${customer.status == 'Qualified'}" class="status-qualified">qualified</span>
+                <span th:if="${customer.status == 'Converted'}" class="status-converted">converted</span>
+                <span th:if="${customer.status == 'Lost'}" class="status-lost">lost</span>
+            </td>
+            <td><span class="source-badge" th:text="${customer.source}">Website</span></td>
+            <td><span class="followup-badge" th:text="${customer.followUpDate != null} ? ${customer.followUpDate} : '—'">—</span></td>
+            <td>
+                <div class="actions">
+                    <a th:href="@{/updateform/{id}(id=${customer.id})}" class="edit-btn">edit</a>
+                    <a th:href="@{/deletecustomer/{id}(id=${customer.id})}" class="delete-btn"
+                       onclick="return confirm('Are you sure you want to delete this customer?')">delete</a>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="empty" th:if="${#lists.isEmpty(customers)}">
+        <p>no customers found — add your first customer!</p>
+    </div>
+</div>
+
+<footer>spring boot + thymeleaf + mysql</footer>
+</body>
+</html>

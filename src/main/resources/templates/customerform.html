@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Form</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,500;1,300&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'DM Mono', monospace;
+            background: #0f0f0f;
+            color: #e8e6e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .card {
+            background: #161616;
+            border: 0.5px solid #2a2a2a;
+            border-radius: 16px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 520px;
+        }
+        .tag {
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            background: #0d3328;
+            color: #5DCAA5;
+            padding: 5px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 1.25rem;
+        }
+        h1 {
+            font-family: 'Fraunces', serif;
+            font-weight: 300;
+            font-size: 30px;
+            letter-spacing: -0.5px;
+            color: #e8e6e0;
+            margin-bottom: 2rem;
+        }
+        h1 em { font-style: italic; color: #1D9E75; }
+        .form-group { margin-bottom: 1.25rem; }
+        label {
+            display: block;
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #888780;
+            margin-bottom: 8px;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            font-family: 'DM Mono', monospace;
+            font-size: 14px;
+            color: #e8e6e0;
+            background: #0f0f0f;
+            border: 0.5px solid #2a2a2a;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+        input:focus,
+        select:focus,
+        textarea:focus { border-color: #1D9E75; }
+        input::placeholder,
+        textarea::placeholder { color: #444441; }
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888780' d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+            cursor: pointer;
+        }
+        select option {
+            background: #161616;
+            color: #e8e6e0;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .form-row {
+            display: flex;
+            gap: 12px;
+        }
+        .form-row .form-group { flex: 1; }
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 2rem;
+        }
+        .submit-btn {
+            flex: 1;
+            font-family: 'DM Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.06em;
+            padding: 12px;
+            background: #1D9E75;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .submit-btn:hover { background: #0F6E56; }
+        .cancel-btn {
+            font-family: 'DM Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.06em;
+            padding: 12px 20px;
+            background: transparent;
+            color: #888780;
+            border: 0.5px solid #2a2a2a;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.15s;
+        }
+        .cancel-btn:hover { border-color: #444441; color: #e8e6e0; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <span class="tag" th:text="${customer.id != null} ? 'update customer' : 'add customer'">add customer</span>
+    <h1>
+        <span th:if="${customer.id == null}">New <em>Customer</em></span>
+        <span th:if="${customer.id != null}">Update <em>Customer</em></span>
+    </h1>
+
+    <form th:action="${customer.id != null} ? @{/updatecustomer} : @{/registercustomer}"
+          th:object="${customer}"
+          method="post">
+
+        <input type="hidden" th:field="*{id}" />
+
+        <div class="form-group">
+            <label>Customer Name</label>
+            <input type="text" th:field="*{customerName}" placeholder="e.g. Rahul Sharma" />
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" th:field="*{email}" placeholder="e.g. rahul@company.com" />
+            </div>
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="tel" th:field="*{phone}" placeholder="e.g. 9876543210" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Company</label>
+            <input type="text" th:field="*{company}" placeholder="e.g. TCS" />
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Status</label>
+                <select th:field="*{status}">
+                    <option value="">Select status</option>
+                    <option value="New">New</option>
+                    <option value="Contacted">Contacted</option>
+                    <option value="Qualified">Qualified</option>
+                    <option value="Converted">Converted</option>
+                    <option value="Lost">Lost</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Source</label>
+                <select th:field="*{source}">
+                    <option value="">Select source</option>
+                    <option value="Website">Website</option>
+                    <option value="Referral">Referral</option>
+                    <option value="Walk-in">Walk-in</option>
+                    <option value="Social Media">Social Media</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Notes</label>
+            <textarea th:field="*{notes}" placeholder="e.g. Interested in enterprise plan, needs follow-up..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Follow-up Date (dd-MM-yyyy)</label>
+            <input type="text" th:field="*{followUpDate}" placeholder="e.g. 25-04-2026" />
+        </div>
+
+        <div class="btn-row">
+            <button type="submit" class="submit-btn"
+                    th:text="${customer.id != null} ? 'update customer' : 'save customer'">
+                save customer
+            </button>
+            <a th:href="@{/getallcustomers}" class="cancel-btn">cancel</a>
+        </div>
+
+    </form>
+</div>
+
+</body>
+</html>
