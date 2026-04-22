@@ -5,7 +5,7 @@ A full-stack CRUD web application for managing customer records, built with Spri
 ## Tech Stack
 
 - **Backend:** Spring Boot, Spring MVC, Spring Data JPA
-- **Frontend:** Thymeleaf, HTML5, CSS3, Bootstrap
+- **Frontend:** Thymeleaf, HTML5
 - **Database:** MySQL
 - **Build Tool:** Maven
 
